@@ -16,6 +16,4 @@ export abstract class Session {
     this.store = store;
   }
   abstract parse(req: IncomingMessage, res: ServerResponse, scope: any): any;
-  abstract save(id: string, session: any): any;
-  abstract update(id: string): any;
 }

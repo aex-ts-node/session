@@ -9,7 +9,7 @@ interface ICookieOptionInput {
   expires?: Date;
   path?: string;
   domain?: string;
-  secure?: boolean;
+  // secure?: boolean;
   [x: string]: any;
 }
 
@@ -19,21 +19,31 @@ interface ICookieOptions {
   expires: Date;
   path: string;
   domain: string;
-  secure: boolean;
+  // secure: boolean;
   [x: string]: any;
 }
 
 export class Cookie extends Session {
-  public async parse(req: IncomingMessage, res: ServerResponse, scope: any) {
-    const header = req.headers["cookie"];
-    if (!header) {
-      return;
-    }
-    const parsed = cookie.parse(header);
+  public async parse(req: IncomingMessage, res: ServerResponse, scope?: any) {
+    const header = req.headers["cookie"] || "";
+    const parsed: any = cookie.parse(header);
     let id: string;
+    if (!scope) {
+      scope = req;
+    }
     if (parsed[this.name]) {
       id = parsed[this.name];
-      scope.session = await this.store.get(id);
+      let session = await this.store.get(id);
+      if (new Date(parsed.Expires).getTime() < Date.now()) {
+        await this.store.destroy(id);
+        id = v4();
+        res.setHeader("Set-Cookie", this.serialize(this.name, id));
+        session = {};
+      } else {
+        parsed.expires = new Date(Date.now() + this.options.maxAge);
+        res.setHeader("Set-Cookie", cookie.serialize(this.name, id, parsed));
+      }
+      scope.session = session;
     } else {
       id = v4();
       res.setHeader("Set-Cookie", this.serialize(this.name, id));
@@ -44,16 +54,9 @@ export class Cookie extends Session {
       await this.store.set(id, scope.session);
     });
   }
-  public async save(id: string, session: any) {
-    await this.store.set(id, session);
-  }
-  public async update(id: string) {
-    this.options.expires = new Date(Date.now() + this.options.maxAge);
-    await this.store.set(id, this.options);
-  }
-  private originalMaxAge: number = 1000 * 60;
+
   public options: ICookieOptions = {
-    maxAge: 0,
+    maxAge: 1000 * 60 * 10,
     httpOnly: true,
     path: "/",
     expires: new Date(),
@@ -61,20 +64,24 @@ export class Cookie extends Session {
     secure: false
   };
 
-  constructor(name: string, store: Store, options: ICookieOptionInput) {
+  constructor(
+    store: Store,
+    options: ICookieOptionInput = {},
+    name: string = "aexId"
+  ) {
     super(name, store);
     for (const key of Object.keys(options)) {
       this.options[key] = options[key];
     }
   }
 
-  public reset() {
-    this.options.maxAge = this.originalMaxAge;
+  public getId(header: string): string {
+    const parsed = cookie.parse(header);
+    return parsed[this.name];
   }
+
   public serialize(name: string, val: string) {
+    this.options.expires = new Date(Date.now() + this.options.maxAge);
     return cookie.serialize(name, val, this.options);
-  }
-  public toJSON() {
-    return this.options;
   }
 }
