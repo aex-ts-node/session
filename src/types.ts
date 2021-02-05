@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from "http";
+import { IncomingMessage, ServerResponse } from 'http';
 
 export abstract class Store {
   abstract set(id: string, value: any): any;

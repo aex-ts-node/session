@@ -1,7 +1,7 @@
-import * as cookie from "cookie";
-import { IncomingMessage, ServerResponse } from "http";
-import { v4 } from "uuid";
-import { Session, Store } from "../types";
+import * as cookie from 'cookie';
+import { IncomingMessage, ServerResponse } from 'http';
+import { v4 } from 'uuid';
+import { Session, Store } from '../types';
 
 interface ICookieOptionInput {
   maxAge?: number;
@@ -25,7 +25,7 @@ interface ICookieOptions {
 
 export class Cookie extends Session {
   public async parse(req: IncomingMessage, res: ServerResponse, scope?: any) {
-    const header = req.headers["cookie"] || "";
+    const header = req.headers['cookie'] || '';
     const parsed: any = cookie.parse(header);
     let id: string;
     if (!scope) {
@@ -37,16 +37,16 @@ export class Cookie extends Session {
       if (new Date(parsed.Expires).getTime() < Date.now()) {
         await this.store.destroy(id);
         id = v4();
-        res.setHeader("Set-Cookie", this.serialize(this.name, id));
+        res.setHeader('Set-Cookie', this.serialize(this.name, id));
         session = {};
       } else {
         parsed.expires = new Date(Date.now() + this.options.maxAge);
-        res.setHeader("Set-Cookie", cookie.serialize(this.name, id, parsed));
+        res.setHeader('Set-Cookie', cookie.serialize(this.name, id, parsed));
       }
       scope.session = session;
     } else {
       id = v4();
-      res.setHeader("Set-Cookie", this.serialize(this.name, id));
+      res.setHeader('Set-Cookie', this.serialize(this.name, id));
       scope.session = {};
     }
     // store all session data into store after the request
@@ -58,16 +58,16 @@ export class Cookie extends Session {
   public options: ICookieOptions = {
     maxAge: 1000 * 60 * 10,
     httpOnly: true,
-    path: "/",
+    path: '/',
     expires: new Date(),
-    domain: "",
-    secure: false
+    domain: '',
+    secure: false,
   };
 
   constructor(
     store: Store,
     options: ICookieOptionInput = {},
-    name: string = "aexId"
+    name: string = 'aexId'
   ) {
     super(name, store);
     for (const key of Object.keys(options)) {

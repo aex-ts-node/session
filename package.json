@@ -32,7 +32,6 @@
   "dependencies": {
     "@types/cookie": "^0.4.0",
     "@types/uuid": "^8.3.0",
-    "bent": "^7.3.12",
     "cookie": "^0.4.1",
     "uuid": "^8.3.2"
   },
@@ -40,11 +39,10 @@
     "@types/bent": "^7.3.2",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.25",
-    "@types/request": "^2.48.5",
     "coveralls": "^3.1.0",
+    "bent": "^7.3.12",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
-    "request": "^2.88.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.0",
     "ts-node": "^9.1.1",
