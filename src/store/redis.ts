@@ -19,7 +19,7 @@ export class RedisStore extends Store {
         if (error) {
           return reject(error);
         }
-        const str = reply!.toString();
+        const str = reply?.toString();
         if (str) {
           resolve(JSON.parse(str));
         } else {
