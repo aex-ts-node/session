@@ -32,6 +32,9 @@ test('Cookie should work', async () => {
   const server = http
     .createServer(function (req: any, res: any) {
       cookie.parse(req, res, scope).then(() => {
+        if (req.url === '/session') {
+          expect(scope.session.user === 'alice').toBeTruthy();
+        }
         scope.session.user = 'alice';
         res.write('Hello World!'); //write a response to the client
         res.end(); //end the response
@@ -47,7 +50,7 @@ test('Cookie should work', async () => {
 
   const getStream1: any = bent('http://localhost:' + port);
 
-  let sessioned = await getStream1('/', null, {
+  let sessioned = await getStream1('/session', null, {
     Cookie: header1,
   });
 

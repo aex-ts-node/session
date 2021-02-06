@@ -19,9 +19,8 @@ export class RedisStore extends Store {
         if (error) {
           return reject(error);
         }
-        const str = reply?.toString();
-        if (str) {
-          resolve(JSON.parse(str));
+        if (reply) {
+          resolve(JSON.parse(reply.toString()));
         } else {
           resolve(undefined);
         }

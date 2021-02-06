@@ -50,7 +50,7 @@ export class Cookie extends Session {
       scope.session = {};
     }
     // store all session data into store after the request
-    process.nextTick(async () => {
+    setImmediate(async () => {
       await this.store.set(id, scope.session);
     });
   }

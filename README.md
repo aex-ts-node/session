@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.com/aex-ts-node/session.svg?branch=master)](https://travis-ci.com/aex-ts-node/session)
-
-[![Coverage Status](https://coveralls.io/repos/github/aex-ts-node/session/badge.svg?branch=master)](https://coveralls.io/github/aex-ts-node/session?branch=master)
+[![Build Status](https://travis-ci.com/aex-ts-node/session.svg?branch=master)](https://travis-ci.com/aex-ts-node/session)[![Coverage Status](https://coveralls.io/repos/github/aex-ts-node/session/badge.svg?branch=master)](https://coveralls.io/github/aex-ts-node/session?branch=master)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 # @aex/session
@@ -20,9 +18,11 @@ yarn add @aex/session
 # Usage
 
 ```ts
-import { MemoryStore, Cookie } from "@aex/session";
+import { MemoryStore, RedisStore, Cookie } from "@aex/session";
 import * as http from "http";
 
+const store = new RedisStore();
+// or
 const store = new MemoryStore();
 const cookie = new Cookie(store);
 const scope: any = {};
