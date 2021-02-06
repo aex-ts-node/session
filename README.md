@@ -17,17 +17,16 @@ yarn add @aex/session
 
 # Usage
 
-```ts
-import { MemoryStore, RedisStore, Cookie } from "@aex/session";
-import * as http from "http";
+## MemoryStore
 
-const store = new RedisStore();
-// or
+```ts
+import { MemoryStore, Cookie } from "@aex/session";
+import * as http from "http";
 const store = new MemoryStore();
 const cookie = new Cookie(store);
 const scope: any = {};
 const server = http
-  .createServer(function(req: any, res: any) {
+  .createServer(function (req: any, res: any) {
     cookie.parse(req, res, scope).then(() => {
       scope.session.user = "alice";
       res.write("Hello World!");
@@ -37,4 +36,25 @@ const server = http
   .listen(port);
 ```
 
-> `scope` is optional. If scope is not provided, session will be attached to `req`.
+## RedisStore
+
+RedisStore uses `node-redis` and takes exactly what `createClient` takes which described [here](https://github.com/NodeRedis/node-redis#rediscreateclient);
+
+```ts
+import { RedisStore, Cookie } from "@aex/session";
+import * as http from "http";
+const store = new RedisStore();
+const cookie = new Cookie(store);
+const scope: any = {};
+const server = http
+  .createServer(function (req: any, res: any) {
+    cookie.parse(req, res, scope).then(() => {
+      scope.session.user = "alice";
+      res.write("Hello World!");
+      res.end();
+    });
+  })
+  .listen(port);
+```
+
+> `scope` is optional. If scope is not provided, session will be attached to `req`, make sure session is request specific even scope can be global.
