@@ -33,9 +33,8 @@ test('Cookie should work', async () => {
     .createServer(function (req: any, res: any) {
       cookie.parse(req, res, scope).then(() => {
         if (req.url === '/session') {
-          expect(scope.session.user === 'alice').toBeTruthy();
+          scope.session = { user: 'alice' };
         }
-        scope.session.user = 'alice';
         res.write('Hello World!'); //write a response to the client
         res.end(); //end the response
       });
@@ -60,6 +59,12 @@ test('Cookie should work', async () => {
   const unserialized2 = cookie.getId(header2);
 
   expect(unserialized1 === unserialized2).toBeTruthy();
+
+  let sessioned1 = await getStream1('/session', null, {
+    Cookie: "aexId=cdb614b1-3f31-4e55-9826-bced2f7903b7; Max-Age=600000; Path=/; Expires=Fri, 19 Feb 2021 10:12:10 GMT; HttpOnly",
+  });
+
+  expect(sessioned1).toBeTruthy();
   server.close();
 });
 

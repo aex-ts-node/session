@@ -34,16 +34,20 @@ export class Cookie extends Session {
     if (parsed[this.name]) {
       id = parsed[this.name];
       let session = await this.store.get(id);
-      if (new Date(parsed.Expires).getTime() < Date.now()) {
-        await this.store.destroy(id);
-        id = v4();
-        res.setHeader('Set-Cookie', this.serialize(this.name, id));
-        session = {};
+      if (!session) {
+        scope.session = {};
       } else {
-        parsed.expires = new Date(Date.now() + this.options.maxAge);
-        res.setHeader('Set-Cookie', cookie.serialize(this.name, id, parsed));
+        if (new Date(parsed.Expires).getTime() < Date.now()) {
+          await this.store.destroy(id);
+          id = v4();
+          res.setHeader('Set-Cookie', this.serialize(this.name, id));
+          scope.session = {};
+        } else {
+          parsed.expires = new Date(Date.now() + this.options.maxAge);
+          res.setHeader('Set-Cookie', cookie.serialize(this.name, id, parsed));
+          scope.session = session;
+        }
       }
-      scope.session = session;
     } else {
       id = v4();
       res.setHeader('Set-Cookie', this.serialize(this.name, id));
