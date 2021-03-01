@@ -31,10 +31,12 @@ test('Cookie should work', async () => {
   //create a server object:
   const server = http
     .createServer(function (req: any, res: any) {
-      cookie.parse(req, res, scope).then(() => {
+      cookie.parse(req, res, scope).then(async () => {
         if (req.url === '/session') {
-          scope.session = { user: 'alice' };
+          scope.session.user = 'alice';
+          await scope.session.save();
         }
+        scope.session.user = 'aaa';
         res.write('Hello World!'); //write a response to the client
         res.end(); //end the response
       });
