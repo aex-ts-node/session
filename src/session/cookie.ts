@@ -27,6 +27,7 @@ export class Cookie extends Session {
   public async parse(req: IncomingMessage, res: ServerResponse, scope?: any) {
     const header = req.headers['cookie'] || '';
     const parsed: any = cookie.parse(header);
+    let saved = false;
     let id: string;
     if (!scope) {
       scope = req;
@@ -55,10 +56,12 @@ export class Cookie extends Session {
     }
 
     scope.session.save = async () => {
+      saved = true;
       await this.store.set(id, scope.session);
-    }
+    };
     // store all session data into store after the request
     setImmediate(async () => {
+      if (saved) return;
       await this.store.set(id, scope.session);
     });
   }
